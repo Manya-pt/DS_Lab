@@ -1,0 +1,75 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define INF 999
+
+int parent[10], rank[10], n;
+
+int find(int x) {
+    if (parent[x] != x) {
+        parent[x] = find(parent[x]);
+    }
+    return parent[x];
+}
+
+void unionSets(int x, int y) {
+    int rootX = find(x);
+    int rootY = find(y);
+
+    if (rank[rootX] < rank[rootY]) {
+        parent[rootX] = rootY;
+    } else if (rank[rootX] > rank[rootY]) {
+        parent[rootY] = rootX;
+    } else {
+        parent[rootX] = rootY;
+        rank[rootY]++;
+    }
+}
+
+void kruskal(int adj[10][10]) {
+    int ne = 0, tot = 0, a, b, min;
+
+    for (int i = 1; i <= n; i++) {
+        parent[i] = i;
+        rank[i] = 0;
+    }
+
+    while (ne < n - 1) {
+        min = INF;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (find(i) != find(j) && adj[i][j] < min) {
+                    min = adj[i][j];
+                    a = i;
+                    b = j;
+                }
+            }
+        }
+
+        if (find(a) != find(b)) {
+            printf("The edge %d -> %d : Cost = %d\n", a, b, min);
+            unionSets(a, b);
+            ne++;
+            tot += min;
+        }
+    }
+
+    printf("Total cost of Minimum Spanning Tree: %d\n", tot);
+}
+
+int main() {
+    printf("Enter no. of vertices : ");
+    scanf("%d", &n);
+
+    int adj[10][10];
+    printf("Enter Adjacency Matrix : ");
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j++) {
+            scanf("%d", &adj[i][j]);
+            if (adj[i][j] == 0)
+                adj[i][j] = INF;
+        }
+    }
+
+    kruskal(adj);
+    return 0;
+}v
